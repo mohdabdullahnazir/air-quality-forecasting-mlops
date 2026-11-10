@@ -1,6 +1,7 @@
 from pathlib import Path
 from time import perf_counter
 
+import mlflow.xgboost
 import matplotlib.pyplot as plt
 import mlflow
 import mlflow.sklearn
@@ -162,16 +163,35 @@ def run_experiment(name, model, train, validation, totals):
 
         if model is not None:
             example = x_train.head(5)
-            model_info = mlflow.sklearn.log_model(
-                sk_model=model,
-                name="model",
-                signature=infer_signature(
-                    example,
-                    model.predict(example),
-                ),
-                input_example=example,
-                code_paths=[str(PROJECT_FOLDER / "src")],
+            signature = infer_signature(
+                example,
+                model.predict(example),
             )
+
+            if isinstance(model, RandomForestRegressor):
+                model_info = mlflow.sklearn.log_model(
+                    sk_model=model,
+                    name="model",
+                    serialization_format="skops",
+                    skops_trusted_types=["sklearn.tree._tree.Tree"],
+                    signature=signature,
+                    input_example=example,
+                    code_paths=[str(PROJECT_FOLDER / "src")],
+                )
+
+            elif isinstance(model, XGBRegressor):
+                model_info = mlflow.xgboost.log_model(
+                    xgb_model=model,
+                    name="model",
+                    model_format="ubj",
+                    signature=signature,
+                    input_example=example,
+                    code_paths=[str(PROJECT_FOLDER / "src")],
+                )
+
+            else:
+                raise TypeError("Unsupported model type.")
+
             model_uri = model_info.model_uri
 
         result = {
