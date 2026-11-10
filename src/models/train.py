@@ -2,7 +2,8 @@ from pathlib import Path
 from time import perf_counter
 
 import mlflow.xgboost
-import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from matplotlib.figure import Figure
 import mlflow
 import mlflow.sklearn
 import pandas as pd
@@ -67,7 +68,11 @@ def log_validation_artifacts(validation, predictions):
         "validation_predictions.csv",
     )
 
-    fig, ax = plt.subplots(figsize=(5, 5))
+    # Render directly to an image canvas without graphical windows.
+    fig = Figure(figsize=(5, 5))
+    FigureCanvasAgg(fig)
+    ax = fig.subplots()
+
     ax.scatter(
         results["target_pm25"],
         results["prediction"],
@@ -88,7 +93,7 @@ def log_validation_artifacts(validation, predictions):
     fig.tight_layout()
 
     mlflow.log_figure(fig, "validation_actual_vs_predicted.png")
-    plt.close(fig)
+    fig.clear()
 
 
 def run_experiment(name, model, train, validation, totals):
