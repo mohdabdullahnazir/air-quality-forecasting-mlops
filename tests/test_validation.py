@@ -53,3 +53,34 @@ def test_rejects_missing_hour(sample_data):
 
     with pytest.raises(ValueError, match="exactly one row per hour"):
         validate_station_data(invalid_data)
+        
+@pytest.mark.parametrize(
+    "column,value",
+    [
+        ("PM2.5", -1.0),
+        ("RAIN", -1.0),
+        ("WSPM", -1.0),
+        ("PRES", 0.0),
+        ("TEMP", float("inf")),
+        ("TEMP", "bad"),
+        ("wd", "INVALID"),
+        ("station", "another_station"),
+    ],
+)
+def test_rejects_invalid_measurements(sample_data, column, value):
+    invalid = sample_data.copy()
+
+    if isinstance(value, str):
+        invalid[column] = invalid[column].astype(object)
+
+    invalid.loc[0, column] = value
+
+    with pytest.raises(ValueError):
+        validate_station_data(invalid)
+
+
+def test_accepts_negative_temperature_and_dew_point(sample_data):
+    sample_data.loc[0, "TEMP"] = -10.0
+    sample_data.loc[0, "DEWP"] = -20.0
+
+    validate_station_data(sample_data)
