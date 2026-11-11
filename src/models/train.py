@@ -12,12 +12,10 @@ from mlflow.models import infer_signature
 from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
 
-from src.data.ingestion import load_station_data
-from src.features.engineering import FEATURE_COLUMNS, create_features
-from src.features.preprocessing import (
-    create_forecast_target,
-    split_by_target_time,
-)
+from feature_store.historical import load_forecast_from_store
+from src.features.engineering import FEATURE_COLUMNS
+from src.features.preprocessing import split_by_target_time
+
 from src.models.evaluate import regression_metrics
 from src.models.tracking import configure_tracking, log_lineage
 
@@ -27,16 +25,7 @@ CONFIG_FILE = PROJECT_FOLDER / "configs" / "model_params.yaml"
 
 
 def prepare_training_data():
-    data_file = (
-        PROJECT_FOLDER
-        / "data"
-        / "raw"
-        / "PRSA_Data_Aotizhongxin_20130301-20170228.csv"
-    )
-
-    raw = load_station_data(data_file)
-    features = create_features(raw)
-    forecast = create_forecast_target(features)
+    forecast = load_forecast_from_store()
 
     train, validation, _ = split_by_target_time(forecast)
 
@@ -46,6 +35,7 @@ def prepare_training_data():
     }
 
     required = FEATURE_COLUMNS + ["target_pm25"]
+
     train = train.dropna(subset=required).copy()
     validation = validation.dropna(subset=required).copy()
 

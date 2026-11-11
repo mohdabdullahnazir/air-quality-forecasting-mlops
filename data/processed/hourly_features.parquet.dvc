@@ -1,0 +1,5 @@
+outs:
+- md5: 1904355bbc9682150d269d9060c6118a
+  size: 911095
+  hash: md5
+  path: hourly_features.parquet

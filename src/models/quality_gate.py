@@ -116,7 +116,11 @@ def main():
     baseline_row = baseline_rows.iloc[0]
     baseline_run, baseline_metrics = fetch_metrics(baseline_row)
 
-    version_tags = ["dataset_dvc_md5", "feature_code_commit"]
+    version_tags = [
+        "dataset_dvc_md5",
+        "feature_code_commit",
+        "feature_source_dvc_md5",   
+    ]
     for tag in version_tags:
         if not baseline_run.data.tags.get(tag):
             raise ValueError(f"Baseline is missing lineage tag: {tag}")
