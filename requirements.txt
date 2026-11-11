@@ -48,7 +48,7 @@ diskcache==5.6.3
 distro==1.9.0
 docker==7.2.0
 dpath==2.2.0
-duckdb==2.0.0
+duckdb==1.5.6
 dulwich==1.2.21
 dvc==3.67.1
 dvc-data==3.18.3

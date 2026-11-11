@@ -1,0 +1,11 @@
+{
+  "mode": "historical_replay",
+  "station_id": "Aotizhongxin",
+  "feature_timestamp": "2016-02-29T14:00:00+00:00",
+  "replay_time": "2016-02-29T14:00:00+00:00",
+  "model_feature_count": 19,
+  "offline_online_agreement": true,
+  "stale_features_rejected": true,
+  "unknown_station_rejected": true,
+  "real_clock_rejects_historical_data": true
+}
