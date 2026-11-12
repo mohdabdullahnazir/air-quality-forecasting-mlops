@@ -1,0 +1,3 @@
+max_mae: 12.0
+max_rmse: 25.0
+min_validation_coverage: 0.80
