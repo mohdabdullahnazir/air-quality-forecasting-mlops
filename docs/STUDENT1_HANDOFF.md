@@ -34,7 +34,7 @@ Ingestion's sort step precedes validation. The validator itself requires chronol
 - reports/models/registry_candidate.json: exact registered version and lineage.
 - reports/models/prediction_example.json: five validation examples and expected predictions.
 - reports/reproducibility/recovery_demo.txt: recovery transcript.
-- reports/reproducibility/recovered_commit.txt: record the explicit recovered HEAD before closing the checklist.
+- reports/reproducibility/recovered_commit.txt: confirmed recovered HEAD, committed in dc6be1f.
 
 Some experiment output files may still need explicit Git staging. MLflow also contains predictions, plots, source/version metadata, environment snapshot, and registry handoff artifacts.
 
@@ -90,8 +90,8 @@ Some experiment output files may still need explicit Git staging. MLflow also co
 - [x] Registered model version and prediction-loading verification.
 - [x] 40 passing tests including actual Feast integration.
 - [x] Recovery data checks and ingestion evidence committed as e3d80e4.
-- [ ] Explicit recovered HEAD captured and checked against the training SHA.
-- [ ] Documentation files copied into the repository, reviewed, committed, and pushed.
+- [x] Explicit recovered HEAD captured and checked against the training SHA.
+- [x] Documentation copied into the repository, committed, and pushed as dc6be1f; teammate review remains open.
 - [ ] Actual PR review/merge evidence recorded.
 - [ ] Integration questions and role ownership acknowledged by the team.
 

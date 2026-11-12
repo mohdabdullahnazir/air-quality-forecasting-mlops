@@ -161,6 +161,10 @@ Student 2 must integrate scheduling, DVC pipeline ownership, Airflow triggering 
 - [Code/data recovery procedure and evidence](docs/REPRODUCIBILITY.md)
 - [Collaboration and DVC merge-conflict procedure](docs/COLLABORATION.md)
 - [Student 1 handoff checklist](docs/STUDENT1_HANDOFF.md)
+- [Student 2 procedure guide](docs/STUDENT2_GUIDE.md)
+- [Student 3 procedure guide](docs/STUDENT3_GUIDE.md)
+- [Shared integration and release contract](docs/TEAM_INTEGRATION.md)
+- [Final demonstration checklist](docs/FINAL_DEMO_CHECKLIST.md)
 - Local evidence: reports/experiments, reports/feature_store, reports/models, and reports/reproducibility.
 
 ## Attribution

@@ -133,7 +133,7 @@ Random Forest artifacts use skops serialization with the specific trusted tree t
 
 The separate recovery checkout was configured to restore the training commit. User-provided output confirms DVC data are up to date, both pointers match the identifiers above, and recovered ingestion validates 35,064 rows with 925 missing PM2.5 values.
 
-The recovery log is committed as e3d80e4 in reports/reproducibility/recovery_demo.txt. Record the exact recovered HEAD separately as described in docs/REPRODUCIBILITY.md; the last shared output excerpt did not include its commit line.
+The recovery log is committed as e3d80e4 in reports/reproducibility/recovery_demo.txt. The subsequent full transcript and recovered_commit.txt confirm HEAD=7725c299b0cc2cb621967617d4126997f69eafd6. Student 1 documentation and that explicit confirmation were committed and pushed as dc6be1f.
 
 The recovery exercise used the current tested environment, Python 3.11.17 and DuckDB 1.5.6. It demonstrates code/data recovery rather than an isolated recreation of every old package version.
 

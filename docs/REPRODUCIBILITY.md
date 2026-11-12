@@ -17,13 +17,13 @@
 
 User-provided output confirms DVC status is up to date; both .dvc pointers contain the hashes above; recovered ingestion validates 35,064 rows and reports 925 missing PM2.5 readings.
 
-The final shared excerpt did not show the recovered HEAD. Confirm it separately and retain the actual output:
+The subsequent full transcript and reports/reproducibility/recovered_commit.txt confirmed the exact recovered HEAD. The confirmation file was committed as part of dc6be1f. To check it again:
 
 ~~~powershell
 git -C "D:\Abdullah\MLops\air-quality-recovery-demo" rev-parse HEAD | Tee-Object -FilePath "D:\Abdullah\MLops\MLops Project\reports\reproducibility\recovered_commit.txt"
 ~~~
 
-Expected full value: 7725c299b0cc2cb621967617d4126997f69eafd6. If it differs, investigate the recovery checkout before marking the code-version demonstration complete.
+Confirmed full value: 7725c299b0cc2cb621967617d4126997f69eafd6. A different checkout should produce this value when repeating the same historical recovery.
 
 ## Repeat the recovery on another checkout
 

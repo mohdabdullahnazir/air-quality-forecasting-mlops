@@ -20,7 +20,7 @@ Add the data and ML foundation for one-hour-ahead Aotizhongxin PM2.5 forecasting
 - Random Forest 1 has validation MAE 9.541573 / RMSE 19.214800.
 - Final test: 7,324 of 8,760 hours scored (83.61%); MAE 10.278413 / RMSE 18.737643 versus persistence 10.459721 / 19.591246.
 - Pinned registry URI: models:/air-quality-pm25-aotizhongxin/1.
-- Recovery data hashes and ingestion match the training snapshot; verify the explicit recovered HEAD evidence before closing review.
+- Recovery data hashes and ingestion match the training snapshot; recovered_commit.txt confirms the exact historical training commit.
 
 ## Limitations and review focus
 
