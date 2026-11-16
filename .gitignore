@@ -21,3 +21,6 @@ __pycache__/
 *.joblib
 *.pkl
 /.dvc/config.local
+
+# Local Feast registry and online-store files
+/feature_store/feature_repo/data/
