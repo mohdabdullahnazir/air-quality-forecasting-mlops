@@ -1,34 +1,23 @@
-# Python-generated files
 __pycache__/
 *.py[cod]
 .pytest_cache/
-
-# Local environment and editor settings
 .venv/
 .vscode/
 
-# Secrets
 .env
 .env.*
 !.env.example
 
-# Raw data belongs in DVC.
-# Allow DVC tracking files into Git.
-/data/raw/*
-!/data/raw/*.dvc
-!/data/raw/.gitignore
+/data/raw/*.csv
+/data/raw/*.zip
+/data/raw/beijing+multi+site+air+quality+data/
 
-# Processed data will also be tracked with DVC.
-/data/processed/*
-!/data/processed/*.dvc
-!/data/processed/.gitignore
+/data/processed/*.csv
+/data/processed/*.parquet
 
-# Generated experiment and model artifacts
 /mlruns/
 /mlartifacts/
 /models/
 *.joblib
 *.pkl
-
-# Local DVC credentials
 /.dvc/config.local
