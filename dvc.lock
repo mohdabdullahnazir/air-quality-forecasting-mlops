@@ -1,0 +1,229 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python -m pipelines.dvc_pipeline prepare
+    deps:
+    - path: configs/pipeline_config.yaml
+      hash: md5
+      md5: 1b6a88b8e9e6bf4017dae3eae9904951
+      size: 987
+    - path: data/raw/PRSA_Data_Aotizhongxin_20130301-20170228.csv
+      hash: md5
+      md5: 72a306d7a095e718c2b46ab482d5a1ac
+      size: 2835916
+    - path: pipelines/dvc_pipeline.py
+      hash: md5
+      md5: 751fa460c3202b784dcd7db4d68ebe96
+      size: 13029
+    - path: src/data/ingestion.py
+      hash: md5
+      md5: 74801f7abbdbb00809da9e3678ecc69b
+      size: 1034
+    - path: src/data/validation.py
+      hash: md5
+      md5: 1d9528b0c03c337e95d7232cf8d52d16
+      size: 2651
+    - path: src/features/engineering.py
+      hash: md5
+      md5: 0b9b2f0065d010836840deddf3af188f
+      size: 2618
+    - path: src/features/preprocessing.py
+      hash: md5
+      md5: c09708fb54bcf3bf6c8d63d00ff4590c
+      size: 2519
+    outs:
+    - path: reports/automation/dvc/prepared
+      hash: md5
+      md5: e958a33477e6ab960dcbd29a53db7301.dir
+      size: 1795257
+      nfiles: 4
+  verify_feast:
+    cmd: python -m pipelines.dvc_pipeline verify-feast
+    deps:
+    - path: data/processed/hourly_features.parquet
+      hash: md5
+      md5: 1904355bbc9682150d269d9060c6118a
+      size: 911095
+    - path: data/raw/PRSA_Data_Aotizhongxin_20130301-20170228.csv
+      hash: md5
+      md5: 72a306d7a095e718c2b46ab482d5a1ac
+      size: 2835916
+    - path: feature_store/feature_repo/definitions.py
+      hash: md5
+      md5: d10c4fce646af2cf2161583f60f45f95
+      size: 1322
+    - path: feature_store/feature_repo/feature_store.yaml
+      hash: md5
+      md5: 9b3181d143904192f4b649d05d42dc46
+      size: 203
+    - path: feature_store/historical.py
+      hash: md5
+      md5: 35c7ad86e5c72a8f6d7109e443df369c
+      size: 4653
+    - path: pipelines/dvc_pipeline.py
+      hash: md5
+      md5: 751fa460c3202b784dcd7db4d68ebe96
+      size: 13029
+    - path: reports/automation/dvc/prepared
+      hash: md5
+      md5: e958a33477e6ab960dcbd29a53db7301.dir
+      size: 1795257
+      nfiles: 4
+    - path: src/data/ingestion.py
+      hash: md5
+      md5: 74801f7abbdbb00809da9e3678ecc69b
+      size: 1034
+    - path: src/data/validation.py
+      hash: md5
+      md5: 1d9528b0c03c337e95d7232cf8d52d16
+      size: 2651
+    - path: src/features/engineering.py
+      hash: md5
+      md5: 0b9b2f0065d010836840deddf3af188f
+      size: 2618
+    - path: src/features/export_feast.py
+      hash: md5
+      md5: b9fec8cf7f6fc7ba43a4454fbfc75937
+      size: 2347
+    - path: src/features/preprocessing.py
+      hash: md5
+      md5: c09708fb54bcf3bf6c8d63d00ff4590c
+      size: 2519
+    outs:
+    - path: reports/automation/dvc/feast_check.json
+      hash: md5
+      md5: 8f5db61cb9c891a7b345ce4ef37b4f9b
+      size: 472
+  train:
+    cmd: python -m pipelines.dvc_pipeline train
+    deps:
+    - path: configs/model_params.yaml
+      hash: md5
+      md5: e8210aa0e01012c8304ace41f216968e
+      size: 367
+    - path: configs/pipeline_config.yaml
+      hash: md5
+      md5: 1b6a88b8e9e6bf4017dae3eae9904951
+      size: 987
+    - path: data/processed/hourly_features.parquet
+      hash: md5
+      md5: 1904355bbc9682150d269d9060c6118a
+      size: 911095
+    - path: data/raw/PRSA_Data_Aotizhongxin_20130301-20170228.csv
+      hash: md5
+      md5: 72a306d7a095e718c2b46ab482d5a1ac
+      size: 2835916
+    - path: feature_store/feature_repo/definitions.py
+      hash: md5
+      md5: d10c4fce646af2cf2161583f60f45f95
+      size: 1322
+    - path: feature_store/feature_repo/feature_store.yaml
+      hash: md5
+      md5: 9b3181d143904192f4b649d05d42dc46
+      size: 203
+    - path: feature_store/historical.py
+      hash: md5
+      md5: 35c7ad86e5c72a8f6d7109e443df369c
+      size: 4653
+    - path: pipelines/common/context.py
+      hash: md5
+      md5: 281792f867914cf78450f8471bd2fd83
+      size: 2192
+    - path: pipelines/common/train.py
+      hash: md5
+      md5: cbec082d79d489d4870d81405d68f62d
+      size: 7551
+    - path: pipelines/common/verify_feast.py
+      hash: md5
+      md5: 780283d78c96f48dc21c0215ec7fc046
+      size: 2898
+    - path: pipelines/dvc_pipeline.py
+      hash: md5
+      md5: 751fa460c3202b784dcd7db4d68ebe96
+      size: 13029
+    - path: reports/automation/dvc/feast_check.json
+      hash: md5
+      md5: 8f5db61cb9c891a7b345ce4ef37b4f9b
+      size: 472
+    - path: reports/automation/dvc/prepared
+      hash: md5
+      md5: e958a33477e6ab960dcbd29a53db7301.dir
+      size: 1795257
+      nfiles: 4
+    - path: src/data/ingestion.py
+      hash: md5
+      md5: 74801f7abbdbb00809da9e3678ecc69b
+      size: 1034
+    - path: src/data/validation.py
+      hash: md5
+      md5: 1d9528b0c03c337e95d7232cf8d52d16
+      size: 2651
+    - path: src/features/engineering.py
+      hash: md5
+      md5: 0b9b2f0065d010836840deddf3af188f
+      size: 2618
+    - path: src/features/export_feast.py
+      hash: md5
+      md5: b9fec8cf7f6fc7ba43a4454fbfc75937
+      size: 2347
+    - path: src/features/preprocessing.py
+      hash: md5
+      md5: c09708fb54bcf3bf6c8d63d00ff4590c
+      size: 2519
+    - path: src/models/evaluate.py
+      hash: md5
+      md5: 3e180af4282aaa431802dbf96d42effa
+      size: 1000
+    - path: src/models/tracking.py
+      hash: md5
+      md5: b47721f7b7f8761406b765118beb57d0
+      size: 2781
+    - path: src/models/train.py
+      hash: md5
+      md5: b5ed83d148524999b51245c2a2b066f7
+      size: 8800
+    outs:
+    - path: reports/automation/dvc/train_pointer.json
+      hash: md5
+      md5: 81a0c5c0e1503784fe84cc88f1512dfe
+      size: 572
+  evaluate:
+    cmd: python -m pipelines.dvc_pipeline evaluate
+    deps:
+    - path: configs/pipeline_config.yaml
+      hash: md5
+      md5: 1b6a88b8e9e6bf4017dae3eae9904951
+      size: 987
+    - path: configs/quality_policy.yaml
+      hash: md5
+      md5: bb42b595db5aeb3ceab1932d54544d5d
+      size: 60
+    - path: pipelines/common/evaluate.py
+      hash: md5
+      md5: 0e0b8161a6b0b56602583e5480190409
+      size: 8848
+    - path: pipelines/dvc_pipeline.py
+      hash: md5
+      md5: 751fa460c3202b784dcd7db4d68ebe96
+      size: 13029
+    - path: reports/automation/dvc/feast_check.json
+      hash: md5
+      md5: 8f5db61cb9c891a7b345ce4ef37b4f9b
+      size: 472
+    - path: reports/automation/dvc/train_pointer.json
+      hash: md5
+      md5: 81a0c5c0e1503784fe84cc88f1512dfe
+      size: 572
+    - path: src/models/quality_gate.py
+      hash: md5
+      md5: 98688e0d13e021b53f17a168f7e23adc
+      size: 6854
+    - path: src/models/tracking.py
+      hash: md5
+      md5: b47721f7b7f8761406b765118beb57d0
+      size: 2781
+    outs:
+    - path: reports/automation/dvc/evaluation_pointer.json
+      hash: md5
+      md5: bb837215099bd279ab1feabb0ae06855
+      size: 486
