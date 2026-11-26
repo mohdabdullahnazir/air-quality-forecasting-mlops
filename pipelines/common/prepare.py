@@ -19,7 +19,7 @@ from src.features.preprocessing import (
 
 def file_md5(path: Path) -> str:
     """Calculate MD5 checksum to verify the dataset version."""
-    digest = hashlib.md5()
+    digest = hashlib.md5(usedforsecurity=False)
 
     with path.open("rb") as stream:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):

@@ -91,7 +91,7 @@ def main():
     ]
 
     for path, tag in file_versions:
-        digest = hashlib.md5(path.read_bytes()).hexdigest()
+        digest = hashlib.md5(path.read_bytes(), usedforsecurity=False).hexdigest()
 
         if digest != source_run.data.tags.get(tag):
             raise ValueError(

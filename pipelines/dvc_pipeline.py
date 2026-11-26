@@ -29,7 +29,7 @@ def _digest(path: Path) -> str:
 
 
 def _md5(path: Path) -> str:
-    md5 = hashlib.md5()
+    md5 = hashlib.md5(usedforsecurity=False)
     with path.open("rb") as file:
         for chunk in iter(lambda: file.read(1024 * 1024), b""):
             md5.update(chunk)

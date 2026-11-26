@@ -28,7 +28,7 @@ def verify(preparation_manifest: str) -> Path:
     raw_path = (PROJECT_ROOT / prep["raw_path"]).resolve()
     if not raw_path.is_relative_to(PROJECT_ROOT):
         raise ValueError("Raw file path escapes project")
-    raw_hash = hashlib.md5(raw_path.read_bytes()).hexdigest()
+    raw_hash = hashlib.md5(raw_path.read_bytes(), usedforsecurity=False).hexdigest()
     if raw_hash != prep["raw_dvc_md5"]:
         raise ValueError("Raw data changed since preparation")
 
