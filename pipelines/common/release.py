@@ -6,7 +6,6 @@ missing test-gate evidence, unapproved registry tags and incomplete image IDs.
 import argparse
 import json
 import re
-from pathlib import Path
 
 from pipelines.common.context import PROJECT_ROOT
 

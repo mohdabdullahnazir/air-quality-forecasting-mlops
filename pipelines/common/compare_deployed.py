@@ -6,8 +6,6 @@ identity and health evidence before a release decision.
 """
 import argparse
 import json
-import math
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
