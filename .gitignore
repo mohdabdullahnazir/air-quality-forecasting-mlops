@@ -24,3 +24,5 @@ __pycache__/
 
 # Local Feast registry and online-store files
 /feature_store/feature_repo/data/
+# Ignore automatically generated pipeline runs
+/reports/automation/runs/
