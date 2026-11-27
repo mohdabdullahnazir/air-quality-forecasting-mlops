@@ -1,0 +1,25 @@
+{
+  "champion": {
+    "run_id": "cd242dea67c940a99babf774e37e07a9",
+    "model_uri": "models:/m-9b545f6a6cab4fce89075808e7cee126"
+  },
+  "candidate": {
+    "run_id": "35352b508fee447eabdb2678bbc74c7b",
+    "model_uri": "models:/m-28d9a201272443839a9e161ba1929f23"
+  },
+  "comparison_manifest": "reports/automation/lifecycle_demo/phase9-20261127T143030Z/comparison_manifest.json",
+  "candidate_gate_result": "ELIGIBLE_FOR_HUMAN_REVIEW",
+  "negative_control": {
+    "test_name": "intentionally_invalid_negative_prediction_is_rejected",
+    "injected_prediction": -1.0,
+    "invalid_negative_prediction_count": 1358,
+    "passed": true,
+    "gate_decision": "REJECT_INVALID_NEGATIVE_PREDICTIONS",
+    "description": "Gate-behavior demonstration only; not a trained challenger"
+  },
+  "remote_training_lineage_independently_verified": false,
+  "deployed_champion_identity_verified": false,
+  "approval_status": "not_reviewed",
+  "deployment_approved": false,
+  "note": "No production deployment or rollback occurred; obtain Student 3 evidence"
+}
