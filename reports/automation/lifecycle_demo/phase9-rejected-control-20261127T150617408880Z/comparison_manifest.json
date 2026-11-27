@@ -1,0 +1,31 @@
+{
+  "evaluation_set_id": "phase9-rejected-control-20261127T150617408880Z-mar-apr-2014",
+  "evaluation_file": "reports/automation/lifecycle_demo/phase9-rejected-control-20261127T150617408880Z/evaluation_mar_apr_2014.parquet",
+  "first_target_time": "2014-03-01T00:00:00",
+  "last_target_time": "2014-04-30T23:00:00",
+  "champion_training_cutoff": "2013-12-31T23:59:59",
+  "candidate_training_cutoff": "2014-02-28T23:59:59",
+  "champion_model_uri": "models:/m-9b545f6a6cab4fce89075808e7cee126",
+  "candidate_model_uri": "models:/m-aa263e6f4b3b46e8a874896ab6bbfc92",
+  "total_rows": 1464,
+  "paired_rows": 1358,
+  "paired_coverage": 0.9275956284153005,
+  "champion_metrics": {
+    "mae": 12.483546815275876,
+    "rmse": 20.21958002187938,
+    "r2": 0.9289657636903921,
+    "negative_prediction_count": 0
+  },
+  "candidate_metrics": {
+    "mae": 59.56956407592713,
+    "rmse": 77.05772569184461,
+    "r2": -0.03170569597692485,
+    "negative_prediction_count": 0
+  },
+  "candidate_improves_paired_mae": false,
+  "candidate_not_worse_paired_rmse": false,
+  "training_cutoffs_verified_against_remote_lineage": false,
+  "deployment_identity_independently_verified": false,
+  "deployment_approved": false,
+  "status": "local_lifecycle_comparison_only_pending_deployment_verification"
+}

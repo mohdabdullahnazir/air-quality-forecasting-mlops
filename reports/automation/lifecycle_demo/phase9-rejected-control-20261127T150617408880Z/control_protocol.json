@@ -1,0 +1,16 @@
+{
+  "experiment_id": "phase9-rejected-control-20261127T150617408880Z",
+  "purpose": "actual_trained_underperforming_candidate_control",
+  "model_class": "sklearn.dummy.DummyRegressor",
+  "model_strategy": "mean",
+  "note": "Intentionally simple, genuinely fitted baseline; NOT an approved release",
+  "source_historical_champion_experiment": "phase9-20261127T143030Z",
+  "raw_md5": "72a306d7a095e718c2b46ab482d5a1ac",
+  "candidate_training_cutoff_exclusive": "2014-03-01T00:00:00",
+  "evaluation_start_inclusive": "2014-03-01T00:00:00",
+  "evaluation_end_exclusive": "2014-05-01T00:00:00",
+  "training_rows": 8207,
+  "evaluation_rows": 1464,
+  "approval_status": "not_reviewed",
+  "deployment_approved": false
+}
