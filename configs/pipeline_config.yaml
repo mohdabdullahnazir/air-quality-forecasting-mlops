@@ -1,0 +1,42 @@
+
+version: 1
+
+data:
+  station: Aotizhongxin
+  mode: historical_replay
+  raw_path: data/raw/PRSA_Data_Aotizhongxin_20130301-20170228.csv
+  raw_dvc_md5: 72a306d7a095e718c2b46ab482d5a1ac
+  feature_path: data/processed/hourly_features.parquet
+  feature_dvc_md5: 1904355bbc9682150d269d9060c6118a
+  forecast_horizon_hours: 1
+
+features:
+  service: pm25_forecasting_v1
+
+pipeline:
+  output_root: reports/automation/runs
+  allow_overwrite: false
+
+mlflow:
+  experiment_name: air-quality-pm25
+  baseline_model_uri: models:/air-quality-pm25-aotizhongxin/1
+  training_run_id: 8bb90ba8cf9c489986f5bd49813fd8fd
+
+evaluation:
+  protocol: historical_replay
+  original_final_report_locked: true
+  compare_on_common_dataset: true
+
+kubeflow:
+  endpoint: null
+  namespace: null
+
+images:
+  ml_component_image: null
+  deployment_image_digest: null
+
+approval:
+  status: pending_review
+  deployment_approved: false
+  require_reviewer: true
+  block_on_quality_failure: true

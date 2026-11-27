@@ -1,0 +1,108 @@
+"""Student 2 Phase 6: validate historical replay, launch KFP and monitor result.
+
+Requires the KFP bridge script and pipeline YAML in /opt/airflow/dags, and a
+separately installed KFP client virtualenv inside the Airflow worker.
+"""
+import csv
+import hashlib
+import json
+import os
+import subprocess
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+from airflow.sdk import dag, get_current_context, task
+
+RAW_DATA = Path('/opt/mlops/data/raw/PRSA_Data_Aotizhongxin_20130301-20170228.csv')
+EXPECTED_MD5 = '72a306d7a095e718c2b46ab482d5a1ac'
+STATION = 'Aotizhongxin'
+BRIDGE = '/opt/airflow/dags/kfp_phase6_bridge.py'
+KFP_PYTHON = '/opt/airflow/kfp-client-venv/bin/python'
+
+
+def _call_bridge(operation: str, payload: dict, timeout_seconds: int) -> dict:
+    if not Path(KFP_PYTHON).is_file():
+        raise RuntimeError('KFP client venv missing in airflow-worker; install it before triggering DAG')
+    if not Path(BRIDGE).is_file():
+        raise RuntimeError(f'Bridge is not mounted in airflow-worker: {BRIDGE}')
+    process = subprocess.run(
+        [KFP_PYTHON, BRIDGE, operation, json.dumps(payload)],
+        capture_output=True, text=True, timeout=timeout_seconds,
+        check=False, env=os.environ.copy(),
+    )
+    if process.stdout:
+        print(process.stdout[-6000:])
+    if process.stderr:
+        print(process.stderr[-6000:])
+    if process.returncode != 0:
+        raise RuntimeError(f'KFP {operation} failed with exit code {process.returncode}')
+    results = [line[len('PHASE6_RESULT='):] for line in process.stdout.splitlines()
+               if line.startswith('PHASE6_RESULT=')]
+    if not results:
+        raise RuntimeError(f'KFP {operation}: no parseable result received')
+    return json.loads(results[-1])
+
+
+@dag(
+    dag_id='ml_orchestrator_dag',
+    description='Phase 6: validate historical replay, submit and monitor KFP',
+    start_date=datetime(2026, 11, 1, tzinfo=timezone.utc),
+    schedule='@daily',
+    catchup=False,
+    max_active_runs=1,
+    default_args={'retries': 1, 'retry_delay': timedelta(minutes=2)},
+    tags=['student2', 'historical-replay', 'phase6', 'kfp'],
+)
+def ml_orchestrator_dag():
+    @task(execution_timeout=timedelta(minutes=5))
+    def validate_input_revision() -> dict:
+        if not RAW_DATA.is_file():
+            raise FileNotFoundError(f'Missing {RAW_DATA}; mount dataset read-only and run dvc pull')
+        digest = hashlib.md5(usedforsecurity=False)
+        with RAW_DATA.open('rb') as source:
+            for block in iter(lambda: source.read(1024 * 1024), b''):
+                digest.update(block)
+        actual = digest.hexdigest()
+        if actual != EXPECTED_MD5:
+            raise ValueError(f'Unexpected raw-data revision: {actual}')
+        with RAW_DATA.open('r', encoding='utf-8-sig', newline='') as source:
+            reader = csv.DictReader(source)
+            required = {'year', 'month', 'day', 'hour', 'PM2.5', 'station'}
+            if not required.issubset(set(reader.fieldnames or [])):
+                raise ValueError('Required raw-data columns missing')
+            first = next(reader, None)
+            if first is None or first.get('station') != STATION:
+                raise ValueError('Unexpected station or empty raw dataset')
+        return {'station': STATION, 'raw_dvc_md5': actual, 'mode': 'historical_replay'}
+
+    @task(execution_timeout=timedelta(minutes=2))
+    def record_replay_run_id(validated: dict) -> dict:
+        context = get_current_context()
+        airflow_run_id = context['dag_run'].run_id
+        stable_id = hashlib.sha256(airflow_run_id.encode()).hexdigest()[:20]
+        trace = {
+            'pipeline_run_id': f'airflow-{stable_id}',
+            'airflow_run_id': airflow_run_id,
+            'data_revision': validated['raw_dvc_md5'],
+            'station': validated['station'],
+            'mode': validated['mode'],
+        }
+        print(f'Validated replay trace: {trace}')
+        return trace
+
+    @task(execution_timeout=timedelta(minutes=10))
+    def submit_kfp(trace: dict) -> dict:
+        return _call_bridge('submit', trace, 9 * 60)
+
+    @task(execution_timeout=timedelta(hours=2), retries=0)
+    def monitor_kfp(run_info: dict) -> dict:
+        result = _call_bridge('poll', run_info, 110 * 60)
+        print(f'KFP terminal result: {result}')
+        if result.get('state', '').upper() != 'SUCCEEDED':
+            raise RuntimeError(f'KFP run did not succeed: {result}')
+        return result
+
+    monitor_kfp(submit_kfp(record_replay_run_id(validate_input_revision())))
+
+
+ml_orchestrator_dag()

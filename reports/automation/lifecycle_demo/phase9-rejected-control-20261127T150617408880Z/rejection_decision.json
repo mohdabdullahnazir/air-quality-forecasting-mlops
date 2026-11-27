@@ -1,0 +1,23 @@
+{
+  "experiment_id": "phase9-rejected-control-20261127T150617408880Z",
+  "trained_control_run_id": "79c1b2c4c8164fda9fcb3b63fdcb8260",
+  "control_model_uri": "models:/m-aa263e6f4b3b46e8a874896ab6bbfc92",
+  "historical_champion_model_uri": "models:/m-9b545f6a6cab4fce89075808e7cee126",
+  "comparison_manifest": "reports/automation/lifecycle_demo/phase9-rejected-control-20261127T150617408880Z/comparison_manifest.json",
+  "checks": {
+    "candidate_improves_paired_mae": false,
+    "candidate_not_worse_paired_rmse": false,
+    "paired_coverage_at_least_80_percent": true,
+    "no_negative_predictions": true
+  },
+  "gate_failure_reasons": [
+    "candidate_improves_paired_mae",
+    "candidate_not_worse_paired_rmse"
+  ],
+  "gate_result": "REJECTED_RETAIN_HISTORICAL_CHAMPION",
+  "approval_status": "not_reviewed",
+  "deployment_approved": false,
+  "independently_verified_deployed_champion": false,
+  "rollback_performed": false,
+  "notes": "This is a real trained weak-control comparison. It is not evidence of an AWS rollback or deployed champion."
+}

@@ -1,0 +1,78 @@
+# Student 2: ML pipeline stages; keep Student 1's data/*.dvc pointers intact.
+# 'prepared/' is a separately versioned DVC output; it does NOT own
+# data/processed/hourly_features.parquet (which already has a .dvc pointer).
+stages:
+  prepare:
+    cmd: python -m pipelines.dvc_pipeline prepare
+    deps:
+      - pipelines/dvc_pipeline.py
+      - configs/pipeline_config.yaml
+      - data/raw/PRSA_Data_Aotizhongxin_20130301-20170228.csv
+      - src/data/ingestion.py
+      - src/data/validation.py
+      - src/features/engineering.py
+      - src/features/preprocessing.py
+    outs:
+      - reports/automation/dvc/prepared
+
+  verify_feast:
+    cmd: python -m pipelines.dvc_pipeline verify-feast
+    deps:
+      - pipelines/dvc_pipeline.py
+      - reports/automation/dvc/prepared
+      - data/raw/PRSA_Data_Aotizhongxin_20130301-20170228.csv
+      - data/processed/hourly_features.parquet
+      - feature_store/historical.py
+      - feature_store/feature_repo/feature_store.yaml
+      - feature_store/feature_repo/definitions.py
+      - src/data/ingestion.py
+      - src/data/validation.py
+      - src/features/engineering.py
+      - src/features/preprocessing.py
+      - src/features/export_feast.py
+    outs:
+      - reports/automation/dvc/feast_check.json:
+          cache: false
+
+  train:
+    cmd: python -m pipelines.dvc_pipeline train
+    deps:
+      - pipelines/dvc_pipeline.py
+      - pipelines/common/context.py
+      - pipelines/common/train.py
+      - pipelines/common/verify_feast.py
+      - configs/pipeline_config.yaml
+      - configs/model_params.yaml
+      - reports/automation/dvc/prepared
+      - reports/automation/dvc/feast_check.json
+      - data/raw/PRSA_Data_Aotizhongxin_20130301-20170228.csv
+      - data/processed/hourly_features.parquet
+      - feature_store/historical.py
+      - feature_store/feature_repo/definitions.py
+      - feature_store/feature_repo/feature_store.yaml
+      - src/data/ingestion.py
+      - src/data/validation.py
+      - src/features/engineering.py
+      - src/features/preprocessing.py
+      - src/features/export_feast.py
+      - src/models/train.py
+      - src/models/evaluate.py
+      - src/models/tracking.py
+    outs:
+      - reports/automation/dvc/train_pointer.json:
+          cache: false
+
+  evaluate:
+    cmd: python -m pipelines.dvc_pipeline evaluate
+    deps:
+      - pipelines/dvc_pipeline.py
+      - pipelines/common/evaluate.py
+      - configs/pipeline_config.yaml
+      - configs/quality_policy.yaml
+      - reports/automation/dvc/feast_check.json
+      - reports/automation/dvc/train_pointer.json
+      - src/models/quality_gate.py
+      - src/models/tracking.py
+    outs:
+      - reports/automation/dvc/evaluation_pointer.json:
+          cache: false

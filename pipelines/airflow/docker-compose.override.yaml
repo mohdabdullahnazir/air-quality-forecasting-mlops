@@ -1,0 +1,6 @@
+# Adds read-only access to an already DVC-restored local station CSV.
+# Keep the official matching docker-compose.yaml in this directory unchanged.
+services:
+  airflow-worker:
+    volumes:
+      - ../../:/opt/mlops:ro

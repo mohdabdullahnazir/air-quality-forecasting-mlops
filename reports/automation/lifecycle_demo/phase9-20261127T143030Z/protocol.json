@@ -1,0 +1,19 @@
+{
+  "protocol": "controlled_historical_replay_not_live_deployment",
+  "experiment_id": "phase9-20261127T143030Z",
+  "training_cutoff_champion_exclusive": "2014-01-01T00:00:00",
+  "training_cutoff_candidate_exclusive": "2014-03-01T00:00:00",
+  "eval_start_inclusive": "2014-03-01T00:00:00",
+  "eval_end_exclusive": "2014-05-01T00:00:00",
+  "raw_md5": "72a306d7a095e718c2b46ab482d5a1ac",
+  "rf_params": {
+    "n_estimators": 150,
+    "max_depth": 12,
+    "min_samples_leaf": 3
+  },
+  "total_eval_rows": 1464,
+  "usable_eval_rows": 1358,
+  "min_required_paired_coverage": 0.8,
+  "approval_status": "not_reviewed",
+  "deployment_approved": false
+}

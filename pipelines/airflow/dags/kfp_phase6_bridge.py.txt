@@ -1,0 +1,127 @@
+"""KFP SDK sidecar command invoked by an Airflow task in its own virtualenv.
+
+Usage: python kfp_phase6_bridge.py submit|poll '{"...":"..."}'
+Environment: KFP_HOST, KFP_PIPELINE_FILE, KFP_IMAGE_DIGEST (if required)
+"""
+import json
+import os
+import sys
+
+import kfp
+import yaml
+
+
+def required_env(name, default=None):
+    value = os.environ.get(name, default)
+    if not value:
+        raise RuntimeError(f'Environment variable {name} is missing')
+    return value
+
+
+def client():
+    # Runtime configuration is generated locally after the Docker/Kind
+    # network is verified; it contains no credentials.
+    settings_path = os.environ.get(
+        'KFP_SETTINGS_FILE', '/opt/airflow/dags/phase6_settings.json'
+    )
+    configured = None
+    if os.path.isfile(settings_path):
+        with open(settings_path, 'r', encoding='utf-8') as source:
+            configured = json.load(source).get('kfp_host')
+    host = os.environ.get('KFP_HOST') or configured
+    if not host:
+        raise RuntimeError('KFP_HOST missing and phase6_settings.json absent')
+    return kfp.Client(host=host)
+
+
+def known_parameters(pipeline_file):
+    with open(pipeline_file, 'r', encoding='utf-8') as source:
+        obj = yaml.safe_load(source)
+    return (obj.get('root') or {}).get('inputDefinitions', {}).get('parameters', {})
+
+
+def find_run_with_name(kfp_client, display_name):
+    """Best-effort retry de-duplication by stable remote run name."""
+    page_token = ''
+    for _ in range(20):
+        page = kfp_client.list_runs(page_size=100, page_token=page_token)
+        for run in (getattr(page, 'runs', None) or []):
+            if getattr(run, 'display_name', None) == display_name:
+                return run
+        page_token = getattr(page, 'next_page_token', '') or ''
+        if not page_token:
+            break
+    return None
+
+
+def submit(payload):
+    pipeline_file = required_env('KFP_PIPELINE_FILE', '/opt/airflow/dags/phase5_smoke.yaml')
+    if not os.path.isfile(pipeline_file):
+        raise FileNotFoundError(f'Compiled pipeline YAML not mounted: {pipeline_file}')
+    run_name = 'student2-' + payload['pipeline_run_id']
+    kfp_client = client()
+    existing = find_run_with_name(kfp_client, run_name)
+    if existing:
+        return {'kfp_run_id': existing.run_id, 'pipeline_run_id': payload['pipeline_run_id'],
+                'reused_existing': True, 'run_name': run_name}
+
+    supplied = {
+        'sample_pm25': 35.0,  # only consumed by the original Phase 5 smoke pipeline
+        'pipeline_run_id': payload['pipeline_run_id'],
+        'data_revision': payload['data_revision'],
+        'validated_revision': payload['data_revision'],
+        'raw_dvc_md5': payload['data_revision'],
+        'station': payload['station'],
+        'image_digest': os.environ.get('KFP_IMAGE_DIGEST', ''),
+    }
+    definitions = known_parameters(pipeline_file)
+    if not definitions:
+        raise ValueError('Compiled pipeline has no input parameter definitions; inspect YAML')
+    arguments = {}
+    for key, spec in definitions.items():
+        if key in supplied and supplied[key] != '':
+            arguments[key] = supplied[key]
+        elif 'defaultValue' not in (spec or {}):
+            raise ValueError(f'Required KFP pipeline input {key!r} has no available value')
+    expected_lineage = {'pipeline_run_id', 'data_revision', 'image_digest'}
+    missing = sorted(expected_lineage - set(definitions))
+    if missing:
+        print('INTEGRATION SMOKE ONLY: compiled KFP package does not accept metadata: ' + ', '.join(missing))
+    run = kfp_client.create_run_from_pipeline_package(
+        pipeline_file,
+        arguments=arguments,
+        run_name=run_name,
+        experiment_name='student2-airflow-kfp',
+        enable_caching=False,
+    )
+    run_id = getattr(run, 'run_id', None)
+    if not run_id:
+        raise RuntimeError(f'Submission returned no run ID: {run!r}')
+    return {'kfp_run_id': run_id, 'pipeline_run_id': payload['pipeline_run_id'],
+            'reused_existing': False, 'run_name': run_name,
+            'lineage_inputs_present': not missing}
+
+
+def poll(payload):
+    kfp_client = client()
+    run_id = payload['kfp_run_id']
+    completed = kfp_client.wait_for_run_completion(run_id, timeout=6300, sleep_duration=15)
+    state = str(getattr(completed, 'state', '') or '').upper()
+    result = {'kfp_run_id': run_id, 'pipeline_run_id': payload['pipeline_run_id'],
+              'state': state, 'reused_existing': payload.get('reused_existing', False),
+              'lineage_inputs_present': payload.get('lineage_inputs_present', False)}
+    if state != 'SUCCEEDED':
+        raise RuntimeError('KFP run failed or incomplete: ' + json.dumps(result))
+    return result
+
+
+def main():
+    if len(sys.argv) != 3 or sys.argv[1] not in {'submit', 'poll'}:
+        raise SystemExit('Usage: kfp_phase6_bridge.py submit|poll json_payload')
+    payload = json.loads(sys.argv[2])
+    result = submit(payload) if sys.argv[1] == 'submit' else poll(payload)
+    print('PHASE6_RESULT=' + json.dumps(result, sort_keys=True), flush=True)
+
+
+if __name__ == '__main__':
+    main()
