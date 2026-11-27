@@ -1,0 +1,6 @@
+{
+    "network":  "kind",
+    "mode":  "integration_smoke",
+    "kfp_host":  "http://172.19.0.2:18888",
+    "connection":  "kind-internal-port-forward"
+}
